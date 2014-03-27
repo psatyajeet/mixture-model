@@ -7,7 +7,11 @@ from sklearn.cross_validation import StratifiedKFold
 from sklearn.externals.six.moves import xrange
 from sklearn.mixture import GMM
 
+class Dataset:
 
+    def __init__ (self, data, target):
+        self.data = data
+        self.target = target
 
 def make_ellipses(gmm, ax):
     for n, color in enumerate('rgb'):
@@ -23,10 +27,29 @@ def make_ellipses(gmm, ax):
         ax.add_artist(ell)
 
 #iris = datasets.load_iris()
-#print iris
 
-iris = datasets.fetch_mldata('housing')
-#iris = datasets.make_blobs(1000, 5, 4)
+data = np.loadtxt('import3.csv', delimiter = ',')
+
+data = data.astype(np.int64)
+
+targets = []
+for point in data:
+    if point[0] == 1:
+        point[0] = 0
+    if point[0] == 2:
+        point[0] = 1
+    if point[0] == 4:
+        point[0] = 2
+    if point[0] == 6:
+        point[0] = 3
+
+    targets.append(point[0])
+
+
+iris= Dataset(data[:, [1, 11, 12]], np.array(targets))
+
+#iris= Dataset(data[:, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]], np.array(targets))
+
 
 # Break up the dataset into non-overlapping training (75%) and testing
 # (25%) sets.
@@ -43,8 +66,12 @@ y_test = iris.target[test_index]
 n_classes = len(np.unique(y_train))
 
 # Try GMMs using different types of covariances.
+# classifiers = dict((covar_type, GMM(n_components=n_classes,
+#                     covariance_type=covar_type, init_params='wc', n_iter=20))
+#                    for covar_type in ['spherical', 'diag', 'tied', 'full'])
+
 classifiers = dict((covar_type, GMM(n_components=n_classes,
-                    covariance_type=covar_type, init_params='wc', n_iter=20))
+                    covariance_type=covar_type, init_params='wc', n_iter=100))
                    for covar_type in ['spherical', 'diag', 'tied', 'full'])
 
 n_classifiers = len(classifiers)
@@ -68,8 +95,8 @@ for index, (name, classifier) in enumerate(classifiers.iteritems()):
 
     for n, color in enumerate('rgb'):
         data = iris.data[iris.target == n]
-        pl.scatter(data[:, 0], data[:, 1], 0.8, color=color,
-                   label=iris.target_names[n])
+        pl.scatter(data[:, 0], data[:, 2], 0.8, color=color,
+                   label='blue')
     # Plot the test data with crosses
     for n, color in enumerate('rgb'):
         data = X_test[y_test == n]
@@ -89,6 +116,13 @@ for index, (name, classifier) in enumerate(classifiers.iteritems()):
     pl.yticks(())
     pl.title(name)
 
+    if name == 'diag':
+        print classifier.means_
+        print classifier.weights_
+        print classifier.covars_
+        print classifier.converged_
+
 pl.legend(loc='lower right', prop=dict(size=12))
 
-pl.show()
+
+#pl.show()

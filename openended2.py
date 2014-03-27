@@ -8,7 +8,6 @@ from sklearn.externals.six.moves import xrange
 from sklearn.mixture import GMM
 
 
-
 def make_ellipses(gmm, ax):
     for n, color in enumerate('rgb'):
         v, w = np.linalg.eigh(gmm._get_covars()[n][:2, :2])
@@ -23,10 +22,9 @@ def make_ellipses(gmm, ax):
         ax.add_artist(ell)
 
 #iris = datasets.load_iris()
-#print iris
-
 iris = datasets.fetch_mldata('housing')
-#iris = datasets.make_blobs(1000, 5, 4)
+
+print iris
 
 # Break up the dataset into non-overlapping training (75%) and testing
 # (25%) sets.
@@ -57,8 +55,8 @@ pl.subplots_adjust(bottom=.01, top=0.95, hspace=.15, wspace=.05,
 for index, (name, classifier) in enumerate(classifiers.iteritems()):
     # Since we have class labels for the training data, we can
     # initialize the GMM parameters in a supervised manner.
-    classifier.means_ = np.array([X_train[y_train == i].mean(axis=0)
-                                  for i in xrange(n_classes)])
+    #classifier.means_ = np.array([X_train[y_train == i].mean(axis=0)
+    #                              for i in xrange(n_classes)])
 
     # Train the other parameters using the EM algorithm.
     classifier.fit(X_train)
@@ -69,7 +67,7 @@ for index, (name, classifier) in enumerate(classifiers.iteritems()):
     for n, color in enumerate('rgb'):
         data = iris.data[iris.target == n]
         pl.scatter(data[:, 0], data[:, 1], 0.8, color=color,
-                   label=iris.target_names[n])
+                   label='hi')
     # Plot the test data with crosses
     for n, color in enumerate('rgb'):
         data = X_test[y_test == n]
@@ -90,5 +88,6 @@ for index, (name, classifier) in enumerate(classifiers.iteritems()):
     pl.title(name)
 
 pl.legend(loc='lower right', prop=dict(size=12))
+
 
 pl.show()
